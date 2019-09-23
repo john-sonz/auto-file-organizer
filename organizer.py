@@ -1,7 +1,12 @@
-from collections import namedtuple
 import json
+import os
 import sys
 import time
+
+from collections import namedtuple
+from contextlib import suppress
+from os import path
+
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -11,9 +16,29 @@ class EventHandler(FileSystemEventHandler):
         self.dest_dir = dest_dir
         self.exts_dirs = exts_dirs
 
-    def on_any_event(self, event):
-        print(f'{event.event_type} at {event.src_path}')
+    def on_modified(self, event):
+        if event.is_directory: return
 
+        filename = path.basename(event.src_path)
+
+        if filename.startswith("_"): return
+
+        extension = path.splitext(filename)[1]
+        ext_dir = self.exts_dirs.get(extension, self.exts_dirs["other"])
+
+        dest_dir = self.dest_dir
+
+        for part in path.normcase(ext_dir).split("\\"):
+                dest_dir = path.join(dest_dir, part)
+                with suppress(OSError):
+                    os.mkdir(dest_dir)
+
+        full_file_path =  path.join(dest_dir, filename)
+
+        try:
+            os.replace(event.src_path, full_file_path)
+        except OSError:
+            pass
 
 Dir_pair = namedtuple("Dir_pair", ["watched", "destination"])
 
