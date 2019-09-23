@@ -1,0 +1,14 @@
+{
+    "watched_dirs_cfgs":[
+        {
+            "watched_dirs": ["C:\\Users\\Janek\\Downloads"],
+            "destination_dirs": ["C:\\Users\\Janek\\Desktop\\Downloads"],
+            "extension_dirs":{
+                ".txt": "text\\txts",
+                ".mp3": "media\\music",
+                ".mp4": "media\\movies",
+                ".jpg": "media\\images"
+            }
+        }
+    ]
+}
